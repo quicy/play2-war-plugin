@@ -8,7 +8,7 @@ object Build extends Build {
   import BuildSettings._
   import Generators._
 
-  val cloudbees = "https://repository-play-war.forge.cloudbees.com/"
+  val backlog = "https://everforth.backlog.jp/dav/APC/maven/"
 
   val curDir = new File(".")
   val servlet30SampleProjectTargetDir = new File(curDir, "../sample/servlet30/target")
@@ -16,6 +16,7 @@ object Build extends Build {
 
   val servlet25SampleProjectTargetDir = new File(curDir, "../sample/servlet25/target")
   val servlet25SampleWarPath = new File(servlet25SampleProjectTargetDir, "a-play2war-sample-servlet25-1.0-SNAPSHOT.war").getAbsolutePath
+
 
   lazy val root = Project(id = "play2-war",
     base = file("."),
@@ -85,24 +86,15 @@ object Build extends Build {
 
       publishTo <<= (version) {
         version: String =>
-          val repo = {
-      	    if (version.trim.endsWith("SNAPSHOT")) {
-              // Cloudbees repo
-              Resolver.url("snapshot",  url(cloudbees + "snapshot/"))(Resolver.ivyStylePatterns)
-
-              // To deploy locally with Ivy style
-              // Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish"))(Resolver.ivyStylePatterns)
-            } else {
-              // Cloudbees repo
-              Resolver.file("file",  file(Path.userHome.absolutePath + "/.ivy2/publish"))
-            }
-          }
-          Some(repo)
+          if (version.trim.endsWith("SNAPSHOT"))
+            Some("Backlog snapshots" at backlog + "snapshots")
+          else
+            Some("Backlog releases" at backlog + "releases")
       },
-      
-      credentials += Credentials(file("/private/play-war/.credentials")),
+
+      credentials += Credentials(file(Path.userHome.absolutePath + "/.sbt/.credentials")),
       credentials += Credentials(file(Path.userHome.absolutePath + "/.ivy2/.credentials")),
-      
+
       publishMavenStyle <<= (version) {
         version: String =>
           if (version.trim.endsWith("SNAPSHOT")) false
@@ -114,7 +106,7 @@ object Build extends Build {
     val buildOrganization = "com.github.play2war"
     val defaultPlay2Version = "2.0.2"
     val play2Version = Option(System.getProperty("play2.version")).filterNot(_.isEmpty).getOrElse(defaultPlay2Version)
-    val buildVersion = "0.8.1"
+    val buildVersion = "0.8.1.ef_1"
 
     val buildSettings = Defaults.defaultSettings ++ Seq(
       organization := buildOrganization,

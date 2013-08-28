@@ -8,6 +8,8 @@ import Play2WarKeys._
 trait Play2WarSettings {
   this: Play2WarCommands =>
 
+  val backlog = "https://everforth.backlog.jp/dav/APC/maven/"
+
   lazy val play2WarSettings = Seq[Setting[_]](
     
     libraryDependencies <++= (servletVersion) { (v) =>
@@ -17,12 +19,12 @@ trait Play2WarSettings {
       }
       Seq("com.github.play2war" %% ("play2-war-core-servlet" + servletVersionString) % com.github.play2war.plugin.Play2WarVersion.current)
     },
-    
+
     resolvers ++= Seq(
       // Releases
-      "Play2war plugin" at "http://repository-play-war.forge.cloudbees.com/release/",
+      "Play2war plugin" at backlog + "releases",
       // Snapshots
-      Resolver.url("Play2war plugin snapshot", url("http://repository-play-war.forge.cloudbees.com/snapshot/"))(Resolver.ivyStylePatterns)),
+      "Play2war plugin snapshot" at backlog + "snapshots"),
 
     webappResource <<= baseDirectory / "war",
 
